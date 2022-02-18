@@ -8,13 +8,13 @@ import (
 
 	"github.com/caarlos0/env/v6"
 	"github.com/go-chi/chi"
-	"github.com/google/uuid"
 	_ "github.com/lib/pq"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/hlog"
 	"url-shorter/db"
 	"url-shorter/handlers"
 	"url-shorter/middleware"
+	"url-shorter/pkg"
 )
 
 type config struct {
@@ -45,7 +45,8 @@ func main() {
 		logger.Panic().Err(err).Msg("cannot ping database")
 	}
 
-	h := handlers.New(db.NewPostgres(dbConn), uuid.NewString)
+	// h := handlers.New(db.NewPostgres(dbConn), uuid.NewString)
+	h := handlers.New(db.NewInMemory(), pkg.GeneratorShortURL)
 	// h := NewHandler(db.NewInMemory())
 
 	r := chi.NewRouter()
