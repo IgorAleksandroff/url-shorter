@@ -8,6 +8,7 @@ import (
 
 	"github.com/caarlos0/env/v6"
 	"github.com/go-chi/chi"
+	"github.com/google/uuid"
 	_ "github.com/lib/pq"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/hlog"
@@ -44,7 +45,7 @@ func main() {
 		logger.Panic().Err(err).Msg("cannot ping database")
 	}
 
-	h := handlers.New(db.NewPostgres(dbConn))
+	h := handlers.New(db.NewPostgres(dbConn), uuid.NewString)
 	// h := NewHandler(db.NewInMemory())
 
 	r := chi.NewRouter()
