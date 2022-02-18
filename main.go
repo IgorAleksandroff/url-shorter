@@ -17,7 +17,7 @@ import (
 )
 
 type config struct {
-	Port int `env:"HTTP_PORT" envDefault:"8000"`
+	Port      int    `env:"HTTP_PORT" envDefault:"8000"`
 	DBConnStr string `env:"DB_CONN_STR" envDefault:"host=localhost user=db_user dbname=url sslmode=disable"`
 }
 

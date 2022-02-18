@@ -16,7 +16,6 @@ type Database interface {
 	Get(ctx context.Context, key string) (string, error)
 }
 
-
 type Shortner struct {
 	db Database
 }
