@@ -15,7 +15,7 @@ type InMemory map[string]string
 
 func (d InMemory) Set(ctx context.Context, key, value string) error {
 	logger := zerolog.Ctx(ctx)
-	
+
 	_, exists := d[key]
 	if exists {
 		logger.Error().Msgf("key %q already exists", key)
@@ -29,7 +29,7 @@ func (d InMemory) Set(ctx context.Context, key, value string) error {
 
 func (d InMemory) Get(ctx context.Context, key string) (string, error) {
 	logger := zerolog.Ctx(ctx)
-	
+
 	value, exists := d[key]
 	if !exists {
 		logger.Error().Msgf("key %q does not exist", key)

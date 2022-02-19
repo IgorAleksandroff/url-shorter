@@ -18,9 +18,9 @@ import (
 )
 
 type config struct {
-	Port      						int    `env:"HTTP_PORT" envDefault:"8000"`
-	DBConnStr 						string `env:"DB_CONN_STR" envDefault:"host=db user=db_user dbname=url sslmode=disable"`
-	PostgresInMemory      bool   `env:"PG_MEMO" envDefault:"true"`
+	Port             int    `env:"HTTP_PORT" envDefault:"8000"`
+	DBConnStr        string `env:"DB_CONN_STR" envDefault:"host=db user=db_user dbname=url sslmode=disable"`
+	PostgresInMemory bool   `env:"PG_MEMO" envDefault:"false"`
 }
 
 func main() {
@@ -36,8 +36,6 @@ func main() {
 		Logger()
 
 	logger = logger.Output(zerolog.NewConsoleWriter())
-
-	logger.Debug().Msgf("test PostgresInMemory: '%v'", cfg.PostgresInMemory)
 
 	h := handlers.New(db.NewInMemory(), pkg.GeneratorShortURL)
 
