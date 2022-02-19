@@ -18,8 +18,9 @@ import (
 )
 
 type config struct {
-	Port      int    `env:"HTTP_PORT" envDefault:"8000"`
-	DBConnStr string `env:"DB_CONN_STR" envDefault:"host=localhost user=db_user dbname=url sslmode=disable"`
+	Port      						int    `env:"HTTP_PORT" envDefault:"8000"`
+	DBConnStr 						string `env:"DB_CONN_STR" envDefault:"host=db user=db_user dbname=url sslmode=disable"`
+	PostgresInMemory      bool   `env:"PG_MEMO" envDefault:"true"`
 }
 
 func main() {
@@ -36,17 +37,22 @@ func main() {
 
 	logger = logger.Output(zerolog.NewConsoleWriter())
 
-	dbConn, err := sql.Open("postgres", cfg.DBConnStr)
-	if err != nil {
-		logger.Fatal().Err(err).Msg("cannot connect to databse")
-	}
+	logger.Debug().Msgf("test PostgresInMemory: '%v'", cfg.PostgresInMemory)
 
-	if err := dbConn.Ping(); err != nil {
-		logger.Panic().Err(err).Msg("cannot ping database")
-	}
-
-	// h := handlers.New(db.NewPostgres(dbConn), pkg.GeneratorShortURL)
 	h := handlers.New(db.NewInMemory(), pkg.GeneratorShortURL)
+
+	if cfg.PostgresInMemory {
+		dbConn, err := sql.Open("postgres", cfg.DBConnStr)
+		if err != nil {
+			logger.Fatal().Err(err).Msg("cannot connect to databse")
+		}
+
+		if err := dbConn.Ping(); err != nil {
+			logger.Panic().Err(err).Msg("cannot ping database")
+		}
+
+		h = handlers.New(db.NewPostgres(dbConn), pkg.GeneratorShortURL)
+	}
 
 	r := chi.NewRouter()
 	r.Use(hlog.NewHandler(logger))

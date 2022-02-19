@@ -1,0 +1,23 @@
+version: "3.6"
+services:
+  url-short:
+    container_name: url-shorter-server
+    build: ./
+    command: ./main
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - PG_MEMO=false
+
+  db:
+    restart: always
+    container_name: url-shorter-postgres
+    build: ./db
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_DB=url
+      - POSTGRES_USER=db_user
+    ports:
+      - "5432:5432"
