@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/google/uuid"
+	"url-shorter/pkg"
 )
 
 type mockShortener struct {
@@ -36,10 +36,10 @@ func TestShortenerGet(t *testing.T) {
 		},
 	}
 
-	s := New(mock, uuid.NewString)
+	s := New(mock, pkg.GeneratorShortURL)
 
 	w := httptest.NewRecorder()
-	r := httptest.NewRequest("GET", "/go?to="+expectedKey, nil)
+	r := httptest.NewRequest("GET", "/"+expectedKey, nil)
 
 	s.GetURL(w, r)
 
@@ -63,14 +63,14 @@ func TestShortenerGet(t *testing.T) {
 func TestShortenerGetDatabaseError(t *testing.T) {
 	mock := mockShortener{
 		GetFn: func(ctx context.Context, key string) (string, error) {
-			return "", errors.New("Oops, something went wrong")
+			return "", errors.New("something went wrong")
 		},
 	}
 
-	s := New(mock, uuid.NewString)
+	s := New(mock, pkg.GeneratorShortURL)
 
 	w := httptest.NewRecorder()
-	r := httptest.NewRequest("GET", "/go?to=foo", nil)
+	r := httptest.NewRequest("GET", "/foo", nil)
 
 	s.GetURL(w, r)
 
@@ -104,7 +104,7 @@ func TestShortenerSaveURL(t *testing.T) {
 	s := New(mock, func() string { return expectedKey })
 
 	w := httptest.NewRecorder()
-	r := httptest.NewRequest("GET", "/save?url="+expecteURL, nil)
+	r := httptest.NewRequest("POST", "/save?url="+expecteURL, nil)
 
 	s.SaveURL(w, r)
 

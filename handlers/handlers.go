@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/go-chi/chi"
 	"github.com/rs/zerolog"
 )
 
@@ -63,7 +64,12 @@ func (s Shortner) GetURL(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	logger := zerolog.Ctx(ctx)
 
-	key := r.URL.Query().Get("to")
+	key := chi.URLParam(r, "uuid")
+	if key == "" || len(key) > 10 {
+		logger.Debug().Msgf("incorrect token: '%s'", key)
+		http.NotFound(w, r)
+		return
+	}
 
 	// SQL DB
 	strURL, err := s.db.Get(ctx, key)

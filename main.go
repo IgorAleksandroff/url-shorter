@@ -45,9 +45,8 @@ func main() {
 		logger.Panic().Err(err).Msg("cannot ping database")
 	}
 
-	// h := handlers.New(db.NewPostgres(dbConn), uuid.NewString)
+	// h := handlers.New(db.NewPostgres(dbConn), pkg.GeneratorShortURL)
 	h := handlers.New(db.NewInMemory(), pkg.GeneratorShortURL)
-	// h := NewHandler(db.NewInMemory())
 
 	r := chi.NewRouter()
 	r.Use(hlog.NewHandler(logger))
@@ -56,8 +55,8 @@ func main() {
 	r.Use(middleware.RequestLogger)
 
 	r.Get("/", handlers.Help)
-	r.Get("/save", h.SaveURL) // TODO Post
-	r.Get("/go", h.GetURL)
+	r.Post("/save", h.SaveURL)
+	r.Get("/{uuid}", h.GetURL)
 
 	logger.Info().Msgf("start HTTP at a port %d", cfg.Port)
 	panic(http.ListenAndServe(fmt.Sprintf(":%d", cfg.Port), r))
