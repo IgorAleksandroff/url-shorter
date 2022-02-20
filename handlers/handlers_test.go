@@ -8,6 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/go-chi/chi"
 	"url-shorter/pkg"
 )
 
@@ -38,10 +39,13 @@ func TestShortenerGet(t *testing.T) {
 
 	s := New(mock, pkg.GeneratorShortURL)
 
+	rout := chi.NewRouter()
+	rout.Get("/{uuid}", s.GetURL)
+
 	w := httptest.NewRecorder()
 	r := httptest.NewRequest("GET", "/"+expectedKey, nil)
 
-	s.GetURL(w, r)
+	rout.ServeHTTP(w, r)
 
 	resp := w.Result()
 
@@ -69,10 +73,13 @@ func TestShortenerGetDatabaseError(t *testing.T) {
 
 	s := New(mock, pkg.GeneratorShortURL)
 
+	rout := chi.NewRouter()
+	rout.Get("/{uuid}", s.GetURL)
+
 	w := httptest.NewRecorder()
 	r := httptest.NewRequest("GET", "/foo", nil)
 
-	s.GetURL(w, r)
+	rout.ServeHTTP(w, r)
 
 	resp := w.Result()
 
